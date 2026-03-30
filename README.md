@@ -23,8 +23,8 @@ Arrocy Whatsapp Gateway integration for Active Ecommerce system. This Module is 
 ```php
 // START COPY CODE HERE //
 Route::group(['prefix' => 'awgcloud'], function () {
-Route::get('/install', function () {
-$response = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/install-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
+    Route::get('/install', function () {
+        $response = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/install-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
 
         foreach ($response as $res) {
             $path = $res['pathFile'];
