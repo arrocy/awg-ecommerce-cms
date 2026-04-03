@@ -29,17 +29,17 @@ Route::group(['prefix' => 'awgcloud'], function () {
         foreach ($filePaths as $path) {
             foreach ($path['files'] as $file) {
                 $content = \File::get($file);
-                foreach ($searches as $i => $search) {
-                    if (!\Str::contains($content, $replaces[$i])) {
+                foreach ($path['searches'] as $i => $search) {
+                    if (!\Str::contains($content, $path['replaces'][$i])) {
                         $content = preg_replace(
                             '/' . preg_quote($search, '/') . '/',
-                            $replaces[$i],
+                            $path['replaces'][$i],
                             $content,
                             1
                         );
                     }
                 }
-                \File::put($path, $content);
+                \File::put($file, $content);
             }
         }
 
