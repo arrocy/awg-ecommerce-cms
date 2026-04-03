@@ -24,33 +24,32 @@ Arrocy Whatsapp Gateway integration for Active Ecommerce system. This Module is 
 // START COPY CODE HERE //
 Route::group(['prefix' => 'awgcloud'], function () {
     Route::get('/install', function () {
-        $response = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/install-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
+        $filePaths = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/install-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
 
-        foreach ($response as $res) {
-            $path = $res['pathFile'];
-            $content = \File::get($path);
-            $searches = $res['searches'] ?? [];
-            $replaces = $res['replaces'] ?? [];
-            foreach ($searches as $i => $search) {
-                if (!\Str::contains($content, $replaces[$i])) {
-                    $content = preg_replace(
-                        '/' . preg_quote($search, '/') . '/',
-                        $replaces[$i],
-                        $content,
-                        1
-                    );
+        foreach ($filePaths as $path) {
+            foreach ($path['files'] as $file) {
+                $content = \File::get($file);
+                foreach ($searches as $i => $search) {
+                    if (!\Str::contains($content, $replaces[$i])) {
+                        $content = preg_replace(
+                            '/' . preg_quote($search, '/') . '/',
+                            $replaces[$i],
+                            $content,
+                            1
+                        );
+                    }
                 }
+                \File::put($path, $content);
             }
-            \File::put($path, $content);
         }
 
         return 'Install Successful. Click here to activate <a href="'. url('/admin/activation') .'">AWG Cloud Module</a>';
     });
 
     Route::get('/uninstall', function () {
-        $pathFiles = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/uninstall-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
+        $filePaths = \Illuminate\Support\Facades\Http::post('https://arrocy.com/api/uninstall-module/ecommerce-cms', ['url' => url('/'), 'base_path' => base_path()])->json();
 
-        foreach ($pathFiles as $path) {
+        foreach ($filePaths as $path) {
             $content = \File::get($path);
             $lines   = explode("\n", $content);
             $result  = [];
@@ -133,7 +132,6 @@ Route::group(['prefix' => 'awgcloud'], function () {
 
         return 'Uninstall Successful. Click here to <a href="'. url('/awgcloud/install') .'">Re-install!</a>';
     });
-
 });
 // STOP COPY CODE HERE //
 ```
